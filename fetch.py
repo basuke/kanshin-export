@@ -165,7 +165,7 @@ class KeywordPage(Page):
         return attributes
 
 
-def fetch_keywords(user_id, offset=0, limit=1000):
+def fetch_keywords(user_id, offset=0, limit=10000):
     list_page = KeywordListPage(user_id)
     keywords = []
     for url in list_page.keyword_pages()[offset:limit]:
@@ -185,7 +185,7 @@ def main(user_id=0):
         usage()
         sys.exit()
 
-    keywords = fetch_keywords(user_id, 0, 4)
+    keywords = fetch_keywords(user_id)
     print(json.dumps(keywords, indent=2, ensure_ascii=False))
 
 if __name__ == '__main__':
