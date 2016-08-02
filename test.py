@@ -1,5 +1,6 @@
 import requests_cache
-from fetch import *
+from kanshin.keyword import DetailPage as KeywordPage, ListPage as KeywordListPage
+from kanshin.diary import DetailPage as DiaryPage
 
 requests_cache.install_cache('test_cache')
 
@@ -38,3 +39,11 @@ def test_keyword():
         {'name': 'URL', 'value': 'http://www.amazon.co.jp/exec/obidos/ASIN/4873112451/kanshin-1-22/ref=nosim'},
     ]
 
+def test_diary():
+    diary = DiaryPage(2922311)
+
+    assert diary.title == 'デカワンコ'
+    assert diary.text.find('綺麗に書いてあるなぁ。') >= 0
+    assert diary.images == ['http://storage.kanshin.com/free/img_53/538430/k619183910.png']
+    assert diary.date == '2010-12-13'
+    assert diary.user == {'name': 'バスケ', 'id': 2}
