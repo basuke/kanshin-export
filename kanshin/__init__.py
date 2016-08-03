@@ -1,7 +1,9 @@
 from bs4 import BeautifulSoup
+from bs4.element import NavigableString, Tag
 import requests
 
 URL = 'http://www.kanshin.com'
+LINK_FORMAT = '[{text}]({url})'
 
 def full_url(url):
     if url.startswith('/'):
@@ -47,3 +49,12 @@ class Page(object):
         urls = map(lambda link: link.get('href'), self.find('a'))
         return [url for url in urls if url and (pattern is None or pattern.search(url))]
 
+def extract_text(elm):
+    text = ''
+    for node in elm.contents:
+        if isinstance(node, NavigableString):
+            text += str(node)
+        elif isinstance(node, Tag):
+            if node.name == 'a':
+                text += LINK_FORMAT.format(url=node.get('href'), text=node.get_text())
+    return text

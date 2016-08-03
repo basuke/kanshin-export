@@ -1,4 +1,4 @@
-from . import Page, URL
+from . import Page, URL, extract_text
 import re
 
 class ListPage(Page):
@@ -30,8 +30,8 @@ class DetailPage(Page):
 
     @property
     def text(self):
-        text = self.select('#entry .body p').pop().get_text()
-        return text
+        p = self.select('#entry .body p').pop()
+        return extract_text(p)
 
     @property
     def images(self):

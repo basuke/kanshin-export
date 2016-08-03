@@ -25,7 +25,7 @@ def test_keyword():
     assert kw.text.find('QuickerGrafに関する記述') >= 0
     assert kw.created == '2010-08-31'
     assert kw.updated == '2010-08-31'
-    assert kw.viewed == 3392
+    assert kw.viewed > 3392
     assert kw.images == ['http://images-jp.amazon.com/images/P/4873112451.09._SCLZZZZZZZ_.jpg']
 
     assert kw.category == {'name':'書籍', 'id':101}
