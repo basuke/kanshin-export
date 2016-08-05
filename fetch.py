@@ -1,5 +1,5 @@
 import sys
-from kanshin.keyword import DetailPage as KeywordPage, ListPage as KeywordListPage
+from kanshin.com.keyword import DetailPage as KeywordPage, ListPage as KeywordListPage
 import json
 import re
 

@@ -1,6 +1,6 @@
 from robobrowser import RoboBrowser
 from robobrowser.compat import urlparse
-from kanshin.diary import DiaryPage
+from .diary import DiaryPage
 
 class KanshinError(Exception):
     def __init__(self, value):

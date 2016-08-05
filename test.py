@@ -1,6 +1,6 @@
 import requests_cache
-from kanshin.keyword import DetailPage as KeywordPage, ListPage as KeywordListPage
-from kanshin.diary import DetailPage as DiaryPage
+from kanshin.com.keyword import DetailPage as KeywordPage, ListPage as KeywordListPage
+from kanshin.com.diary import DiaryPage
 
 requests_cache.install_cache('test_cache')
 
