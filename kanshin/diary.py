@@ -1,17 +1,10 @@
 from . import Page, URL, extract_text
-import re
+from bs4.element import Tag
 
-class ListPage(Page):
-    def __init__(self, user_id, p=1):
-        super(ListPage, self).__init__('%s/user/%s/keyword?od=create&p=%s' % (URL, user_id, p))
-
-    def keyword_pages(self):
-        return sorted(list(set([link.get('href') for link in self.select('#content a[href^=/keyword/]')])), reverse=True)
-
-class DetailPage(Page):
-    def __init__(self, diary_id):
+class DiaryPage(Page):
+    def __init__(self, diary_id, soup=None):
         self.diary_id = diary_id
-        super(DetailPage, self).__init__('%s/diary/%s' % (URL, diary_id, ))
+        super().__init__('%s/diary/%s' % (URL, diary_id, ), soup)
 
     @property
     def record(self):
@@ -22,6 +15,7 @@ class DetailPage(Page):
             "text": self.text,
             "images": self.images,
             "user": self.user,
+            "comments": self.comments,
         }
 
     @property
@@ -31,7 +25,7 @@ class DetailPage(Page):
     @property
     def text(self):
         p = self.select('#entry .body p').pop()
-        return extract_text(p)
+        return extract_text(p.contents)
 
     @property
     def images(self):
@@ -49,3 +43,30 @@ class DetailPage(Page):
         name = sec.get_text().replace('の空間', '')
         uid = int(sec.get('href').split('/')[-1])
         return {'name': name, 'id': uid}
+
+    @property
+    def comments(self):
+        container = self.select('#comment div.body')[0]
+        items = (item for item in container.contents if type(item) == Tag)
+        comments = []
+        date = None
+        for item in items:
+            if item.name == 'h3':
+                date = item.get_text().replace('/', '-')
+            elif not item.get('class'):
+                texts = [t for t in item.contents[2:] if type(t) != Tag or not t.get('onclick')]
+                text = extract_text(texts).rstrip()
+
+                link = item.select('a')[0]
+                name = link.get_text()
+                uid = int(link.get('href').split('/')[-1])
+                user =  {'name': name, 'id': uid}
+
+                comments.append({
+                    'user': user,
+                    'text': text,
+                    'date': date,
+                })
+
+        return comments
+

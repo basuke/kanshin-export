@@ -5,25 +5,15 @@ import requests
 URL = 'http://www.kanshin.com'
 LINK_FORMAT = '[{text}]({url})'
 
-def full_url(url):
-    if url.startswith('/'):
-        url = URL + url
-    return url
-
 class Page(object):
-    def __init__(self, url):
-        self.url = full_url(url)
+    def __init__(self, url, soup=None):
+        self.url = url
 
-        self.response = requests.get(self.url)
-        self.soup = BeautifulSoup(self.response.text, 'html.parser')
-
-    @property
-    def html(self):
-        return self.response.text
-
-    @property
-    def status_code(self):
-        return self.response.status_code
+        if soup:
+            self.soup = soup
+        else:
+            response = requests.get(self.url)
+            self.soup = BeautifulSoup(response.text, 'html.parser')
 
     def find(self, tag):
         return self.soup.find_all(tag)
@@ -49,9 +39,9 @@ class Page(object):
         urls = map(lambda link: link.get('href'), self.find('a'))
         return [url for url in urls if url and (pattern is None or pattern.search(url))]
 
-def extract_text(elm):
+def extract_text(contents):
     text = ''
-    for node in elm.contents:
+    for node in contents:
         if isinstance(node, NavigableString):
             text += str(node)
         elif isinstance(node, Tag):
