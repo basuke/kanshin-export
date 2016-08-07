@@ -94,24 +94,26 @@ def main(logger, email, password):
         save_diary(diary)
 
 
-def main2(logger, user_id):
+def main2(logger, *user_ids):
     logger.debug('start Kanshin browser')
     browser = KanshinBrowser()
 
-    user_saved = False
+    for user_id in user_ids:
+        user_saved = False
 
-    diaries = browser.get_user_diaries(user_id)
-    logger.debug('find {count} diaries'.format(count=len(diaries)))
+        logger.debug('fetching diary ids for user id={id}'.format(id=user_id))
+        diaries = browser.get_user_diaries(user_id)
+        logger.debug('find {count} diaries'.format(count=len(diaries)))
 
-    for info in diaries[:]:
-        logger.debug('fetching diary:{title} id={id}'.format(**info))
-        diary = browser.get_diary(info['id'])
+        for info in diaries[:]:
+            logger.debug('fetching diary:{title} id={id}'.format(**info))
+            diary = browser.get_diary(info['id'])
 
-        if not user_saved:
-            save_user(diary['user'])
-            user_saved = True
+            if not user_saved:
+                save_user(diary['user'])
+                user_saved = True
 
-        save_diary(diary)
+            save_diary(diary)
 
 
 def daemon(func, pid=None, log=None):
