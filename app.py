@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys
 from bottle import route, run, template, request, response, redirect
 import boto3
