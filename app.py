@@ -113,5 +113,5 @@ def export_diary(user_id):
 def redirect_user(user_id):
     redirect('http://www.kanshin.com/user/{user_id}'.format(user_id=user_id))
 
-
-run(host='0.0.0.0', port=sys.argv[1])
+port = sys.argv[1] if len(sys.argv) > 1 else 8080
+run(host='0.0.0.0', port=port, , server='gunicorn')
