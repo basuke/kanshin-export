@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/basuke/kanshin-export.svg?branch=master)](https://travis-ci.org/basuke/kanshin-export)
+
 # Kanshin Export Tool
 
 関心空間から公開されているキーワード情報をダウンロードするツールです。
