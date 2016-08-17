@@ -3,5 +3,5 @@ python:
   - "3.4"
   - "3.5"
 install: "pip install -r requirements.txt -r dev-requirements.txt"
-scritp:
+script:
   - nosetests kanshin/com/test.py
