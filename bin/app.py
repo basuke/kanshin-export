@@ -1,38 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import os.path
 import sys
+sys.path.insert(0, os.path.abspath('.'))
+
 from bottle import route, run, template, request, response, redirect
 import boto3
 from boto3.dynamodb.conditions import Key
-import json
+from kanshin.data import fetch_user_diaries
 
-dynamodb = boto3.resource('dynamodb', region_name='us-west-2', endpoint_url="http://localhost:8000")
-
-TABLE_PREFIX = 'kanshin-com-'
-USER_TABLE = TABLE_PREFIX + 'user'
-DIARY_TABLE = TABLE_PREFIX + 'diary'
-
-dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-1')
-user_table = dynamodb.Table(USER_TABLE)
-diary_table = dynamodb.Table(DIARY_TABLE)
-
-s3 = boto3.resource('s3')
-storage_bucket = s3.Bucket('s.kanshin.link')
-
-# Helper class to convert a DynamoDB item to JSON.
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, decimal.Decimal):
-            if o % 1 > 0:
-                return float(o)
-            else:
-                return int(o)
-        return super(DecimalEncoder, self).default(o)
-
-
-@route('/hello/<name>')
-def index(name):
-    return template('<b>Hello {{name}}</b>!', name=name)
 
 IMG_TEMPLATE = '<img src="{url}" class="kanshin-diary-entry-images">'
 
@@ -104,9 +80,9 @@ def export_diary(user_id):
     response.set_header('Content-Disposition', 'attachment; filename=' + filename);
     response.set_header('Content-Transfer-Encoding', 'binary')
 
-    result = diary_table.query(IndexName='user_id-date-index-copy', KeyConditionExpression=Key('user_id').eq(user_id))
+    result = fetch_user_diaries(user_id)
 
-    for item in result['Items']:
+    for item in result:
         yield build_entry(options=request.query, **item)
 
 @route('/user/<user_id:int>')
