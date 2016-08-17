@@ -1,12 +1,15 @@
-import requests_cache
 from kanshin.com.keyword import DetailPage as KeywordPage, ListPage as KeywordListPage
 from kanshin.com.diary import DiaryPage
+from bs4 import BeautifulSoup
 
-requests_cache.install_cache('test_cache')
+def load(path):
+    with open(path) as f:
+        return BeautifulSoup(f.read(), 'html.parser')
+
 
 def test_keyword():
     # 通常のキーワード
-    kw = KeywordPage(2754133)
+    kw = KeywordPage(2754133, load('kanshin/com/data/keyword-2754133.html'))
 
     assert kw.title == '鳥獣giga'
     assert kw.attributes == [
@@ -18,7 +21,7 @@ def test_keyword():
 
 
     # Amazon簡単キーワード商品
-    kw = KeywordPage(2467663)
+    kw = KeywordPage(2467663, load('kanshin/com/data/keyword-2467663.html'))
 
     assert kw.title == 'レボリューション・イン・ザ・バレー ―開発者が語るMacintosh誕生の舞台裏'
     assert kw.title_yomi == 'Revolution in The Valley'
@@ -39,11 +42,14 @@ def test_keyword():
         {'name': 'URL', 'value': 'http://www.amazon.co.jp/exec/obidos/ASIN/4873112451/kanshin-1-22/ref=nosim'},
     ]
 
+
 def test_diary():
-    diary = DiaryPage(2922311)
+    diary = DiaryPage(2922311, load('kanshin/com/data/diary-2922311.html'))
 
     assert diary.title == 'デカワンコ'
     assert diary.text.find('綺麗に書いてあるなぁ。') >= 0
     assert diary.images == ['http://storage.kanshin.com/free/img_53/538430/k619183910.png']
     assert diary.date == '2010-12-13'
     assert diary.user == {'name': 'バスケ', 'id': 2}
+
+

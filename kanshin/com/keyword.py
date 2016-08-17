@@ -9,9 +9,9 @@ class ListPage(Page):
         return sorted(list(set([link.get('href') for link in self.select('#content a[href^=/keyword/]')])), reverse=True)
 
 class DetailPage(Page):
-    def __init__(self, keyword_id):
+    def __init__(self, keyword_id, soup=None):
         self.keyword_id = keyword_id
-        super(DetailPage, self).__init__('%s/keyword/%s' % (URL, keyword_id, ))
+        super(DetailPage, self).__init__('%s/keyword/%s' % (URL, keyword_id, ), soup)
 
     @property
     def record(self):
