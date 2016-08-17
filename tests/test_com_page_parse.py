@@ -1,15 +1,17 @@
+# -*- coding: utf-8 -*-
+
 from kanshin.com.keyword import DetailPage as KeywordPage, ListPage as KeywordListPage
 from kanshin.com.diary import DiaryPage
 from bs4 import BeautifulSoup
 
 def load(path):
-    with open(path) as f:
+    with open('tests/data/' + path) as f:
         return BeautifulSoup(f.read(), 'html.parser')
 
 
 def test_keyword():
-    # 通常のキーワードページの解析
-    kw = KeywordPage(2754133, load('kanshin/com/data/keyword-2754133.html'))
+    """通常のキーワードページの解析"""
+    kw = KeywordPage(2754133, load('keyword-2754133.html'))
 
     assert kw.title == '鳥獣giga'
     assert kw.attributes == [
@@ -20,8 +22,8 @@ def test_keyword():
 
 
 def test_keyword_amazon():
-    # Amazon簡単キーワード商品ページの解析
-    kw = KeywordPage(2467663, load('kanshin/com/data/keyword-2467663.html'))
+    """Amazon簡単キーワード商品ページの解析"""
+    kw = KeywordPage(2467663, load('keyword-2467663.html'))
 
     assert kw.title == 'レボリューション・イン・ザ・バレー ―開発者が語るMacintosh誕生の舞台裏'
     assert kw.title_yomi == 'Revolution in The Valley'
@@ -45,26 +47,26 @@ def test_keyword_amazon():
     assert kw.comments[0]['user']['name'] == 'Fuzzio'
 
 def test_keyword_all_comments():
-    # コメントがたくさんあるページの解析
-    kw = KeywordPage(745093, load('kanshin/com/data/keyword-745093.html'))
+    """コメントがたくさんあるページの解析"""
+    kw = KeywordPage(745093, load('keyword-745093.html'))
     assert kw.more_comments
 
     # コメント9件
-    kw = KeywordPage(745093, load('kanshin/com/data/keyword-745093-comment.html'))
+    kw = KeywordPage(745093, load('keyword-745093-comment.html'))
     assert len(kw.comments) == 8
 
 def test_keyword_all_connections():
-    # リンクがたくさんあるページの解析
-    kw = KeywordPage(218, load('kanshin/com/data/keyword-218.html'))
+    """リンクがたくさんあるページの解析"""
+    kw = KeywordPage(218, load('keyword-218.html'))
     assert kw.more_connections
 
     # つながり30件
-    kw = KeywordPage(218, load('kanshin/com/data/keyword-218-connect.html'))
+    kw = KeywordPage(218, load('keyword-218-connect.html'))
     assert len(kw.connections) == 30
 
 def test_diary():
-    # 日記ページの解析
-    diary = DiaryPage(2922311, load('kanshin/com/data/diary-2922311.html'))
+    """日記ページの解析"""
+    diary = DiaryPage(2922311, load('diary-2922311.html'))
 
     assert diary.title == 'デカワンコ'
     assert diary.text.find('綺麗に書いてあるなぁ。') >= 0
