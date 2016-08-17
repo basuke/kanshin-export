@@ -1,4 +1,5 @@
 from . import Page, URL, extract_text
+from bs4.element import Tag
 import re
 
 class ListPage(Page):
@@ -111,4 +112,71 @@ class DetailPage(Page):
 
         return attributes
 
+    @property
+    def more_comments(self):
+        return len(self.select('#comment .listNavAll')) > 0
+
+    @property
+    def comments(self):
+        container = self.select('#comment div.body')[0]
+        items = (item for item in container.contents if type(item) == Tag)
+        comments = []
+        date = None
+        for item in items:
+            if not item.get_text():
+                continue
+            if item.name == 'h3': # date
+                date = item.get_text().replace('/', '-')
+            elif not item.get('class'):
+                texts = [t for t in item.contents[2:] if type(t) != Tag or not t.get('onclick')]
+                text = extract_text(texts).rstrip()
+
+                link = item.select('a')[0]
+                name = link.get_text()
+                uid = int(link.get('href').split('/')[-1])
+                user =  {'name': name, 'id': uid}
+
+                comments.append({
+                    'user': user,
+                    'text': text,
+                    'date': date,
+                })
+
+        return comments
+
+
+    @property
+    def more_connections(self):
+        return len(self.select('#connection .listNavAll')) > 0
+
+
+    @property
+    def connections(self):
+        connections = []
+        connection = {}
+        for div in self.select('#connection > div'):
+            cls = div.get('class')
+            if 'connectionReason' in cls:
+                for li in div.select('li'):
+                    cls = li.get('class')
+                    if 'connectionReasonOut' in cls:
+                        links = li.select('a[href^=/connect/]')
+                        if links:
+                            connection['in'] = links[0].get_text().replace('つながり', '')
+
+                    if 'connectionReasonIn' in cls:
+                        links = li.select('a[href^=/connect/]')
+                        if links:
+                            connection['out'] = links[0].get_text().replace('つながり', '')
+
+            elif 'item' in cls:
+                link = div.select('h3 a')[0]
+                connection['id'] = int(link.get('href').split('/')[-1])
+                connection['title'] = link.get_text().strip()
+                connection['user'] = div.select('ul li')[0].get_text()[1:-1]
+                connections.append(connection)
+
+                connection = {}
+
+        return connections
 

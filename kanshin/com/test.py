@@ -19,7 +19,7 @@ def test_keyword():
     ]
 
 
-
+def test_keyword_amazon():
     # Amazon簡単キーワード商品
     kw = KeywordPage(2467663, load('kanshin/com/data/keyword-2467663.html'))
 
@@ -42,6 +42,23 @@ def test_keyword():
         {'name': 'URL', 'value': 'http://www.amazon.co.jp/exec/obidos/ASIN/4873112451/kanshin-1-22/ref=nosim'},
     ]
 
+    assert kw.comments[0]['user']['name'] == 'Fuzzio'
+
+def test_keyword_all_comments():
+    kw = KeywordPage(745093, load('kanshin/com/data/keyword-745093.html'))
+    assert kw.more_comments
+
+    # コメント9件
+    kw = KeywordPage(745093, load('kanshin/com/data/keyword-745093-comment.html'))
+    assert len(kw.comments) == 8
+
+def test_keyword_all_connections():
+    kw = KeywordPage(218, load('kanshin/com/data/keyword-218.html'))
+    assert kw.more_connections
+
+    # つながり30件
+    kw = KeywordPage(218, load('kanshin/com/data/keyword-218-connect.html'))
+    assert len(kw.connections) == 30
 
 def test_diary():
     diary = DiaryPage(2922311, load('kanshin/com/data/diary-2922311.html'))
