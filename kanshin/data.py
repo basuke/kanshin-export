@@ -18,3 +18,10 @@ def fetch_user_diaries(user_id):
     result = diary_table.query(IndexName='user_id-date-index-copy', KeyConditionExpression=Key('user_id').eq(user_id))
     return result['Items']
 
+def fetch_user(user_id):
+	result = user_table.query(KeyConditionExpression=Key('id').eq(user_id))
+	if 'Items' in result  and result['Items']:
+		return result['Items'][0]
+	else:
+		return None
+

@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+import os.path
+import sys
+sys.path.insert(0, os.path.abspath('.'))
+
+import click
+from click import echo
+import kanshin.data
+
+class NativeParamType(click.ParamType):
+    name = 'native'
+
+NATIVE = NativeParamType()
+
+# ----------------------------------------------------------
+
+@click.group()
+def cli():
+    """CLI for accessing kanshin data"""
+    pass
+
+@cli.group(invoke_without_command=True)
+@click.pass_context
+@click.argument('user_id', type=click.INT)
+def user(ctx, user_id):
+    """Simple program that greets NAME for a total of COUNT times."""
+    user = kanshin.data.fetch_user(user_id)
+    if user:
+        if ctx.invoked_subcommand is None:
+            echo(user)
+        else:
+            ctx.user = user
+            ctx.user_id = user_id
+    else:
+        echo('cannot find user with id({})'.format(user_id))
+
+
+if __name__ == '__main__':
+    cli()
