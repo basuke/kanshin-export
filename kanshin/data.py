@@ -3,6 +3,7 @@
 import boto3
 from boto3.dynamodb.conditions import Key
 from urllib.parse import urlparse
+import requests
 
 TABLE_PREFIX = 'kanshin-com-'
 USER_TABLE = TABLE_PREFIX + 'user'
