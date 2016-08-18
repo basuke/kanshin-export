@@ -132,12 +132,12 @@ class KanshinBrowser(RoboBrowser):
         result = []
         page = 1
         count = 100
+        url += '?' if url.find('?') < 0 else '&'
 
         while True:
-            url += '?' if url.find('?') < 0 else '&'
-            url += 'p={p}&cn={cn}'.format(p=page, cn=count)
+            tmp_url = url + 'p={p}&cn={cn}'.format(p=page, cn=count)
 
-            self.open(url)
+            self.open(tmp_url)
             self.save_page()
             items = self.parsed.select(selector)
             if len(items) == 0:
