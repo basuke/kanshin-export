@@ -26,7 +26,8 @@ class DetailPage(Page):
             "updated": self.updated,
             "viewed": self.viewed,
             "category": self.category,
-            "user": self.user,
+            "user_id": self.user['id'],
+            "user": self.user['name'],
             "attributes": self.attributes,
         }
 
@@ -134,10 +135,10 @@ class DetailPage(Page):
                 link = item.select('a')[0]
                 name = link.get_text()
                 uid = int(link.get('href').split('/')[-1])
-                user =  {'name': name, 'id': uid}
 
                 comments.append({
-                    'user': user,
+                    'user_id': uid,
+                    'user': name,
                     'text': text,
                     'date': date,
                 })

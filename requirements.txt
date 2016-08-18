@@ -4,3 +4,4 @@ bottle
 gunicorn
 honcho
 click
+rq

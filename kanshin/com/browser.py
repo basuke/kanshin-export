@@ -1,5 +1,6 @@
 from robobrowser import RoboBrowser
 from robobrowser.compat import urlparse
+import boto3
 from .diary import DiaryPage
 
 class KanshinError(Exception):
@@ -25,6 +26,9 @@ def login_only(func):
 
     return wrapper
 
+s3 = boto3.resource('s3')
+rip_bucket = s3.Bucket('raw.kanshin.rip')
+
 class KanshinBrowser(RoboBrowser):
     def __init__(self, base_url='http://www.kanshin.com'):
         super().__init__(parser="html.parser")
@@ -40,6 +44,15 @@ class KanshinBrowser(RoboBrowser):
 
         if self.response.status_code == 404:
             raise URLError()
+
+    def save_page(self):
+        if not self.user:
+            path = self.response.url.split('/', 3).pop()
+            content_type = self.response.headers['content-type']
+            content = self.response.text
+
+            obj = rip_bucket.Object(path)
+            obj.put(Body=content, ContentType=content_type, ACL='public-read')
 
     def login(self, email, password):
         self.logout()
@@ -82,10 +95,13 @@ class KanshinBrowser(RoboBrowser):
 
     def get_diary(self, diary_id):
         self.open('/diary/{did}'.format(did=diary_id))
+        self.save_page()
+
         record = DiaryPage(diary_id, self.parsed).record
 
         if self.parsed.select('.listNavAll a'):
             self.open('/diary/{did}/comment'.format(did=diary_id))
+            self.save_page()
             record['comments'] = DiaryPage(diary_id, self.parsed).comments
 
         return record
@@ -122,6 +138,7 @@ class KanshinBrowser(RoboBrowser):
             url += 'p={p}&cn={cn}'.format(p=page, cn=count)
 
             self.open(url)
+            self.save_page()
             items = self.parsed.select(selector)
             if len(items) == 0:
                 break

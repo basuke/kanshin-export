@@ -44,7 +44,7 @@ def test_keyword_amazon():
         {'name': 'URL', 'value': 'http://www.amazon.co.jp/exec/obidos/ASIN/4873112451/kanshin-1-22/ref=nosim'},
     ]
 
-    assert kw.comments[0]['user']['name'] == 'Fuzzio'
+    assert kw.comments[0]['user'] == 'Fuzzio'
 
 def test_keyword_all_comments():
     """コメントがたくさんあるページの解析"""
