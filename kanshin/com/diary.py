@@ -40,10 +40,9 @@ class DiaryPage(Page):
 
     @property
     def user(self):
-        sec = self.select('.topicpath ul a')[0]
-        name = sec.get_text().replace('の空間', '')
-        uid = int(sec.get('href').split('/')[-1])
-        return {'name': name, 'id': uid}
+        user = extract_user(self.select('.topicpath ul a')[0])
+        name = user['name'].replace('の空間', '')
+        return {'name': name, 'id': user['id']}
 
     @property
     def comments(self):
