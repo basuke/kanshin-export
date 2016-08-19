@@ -5,3 +5,4 @@ gunicorn
 honcho
 click
 rq
+requests_cache
