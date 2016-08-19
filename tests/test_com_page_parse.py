@@ -74,4 +74,9 @@ def test_diary():
     assert diary.date == '2010-12-13'
     assert diary.user == {'name': 'バスケ', 'id': 2}
 
+def test_sponsor():
+    """スポンサーユーザー関係の解析"""
+    diary = DiaryPage(1192187, load('diary-1192187.html'))
 
+    assert diary.comments[-1]['sponsor'] == 'planted'
+    assert diary.comments[-1]['user_id'] == 42756
