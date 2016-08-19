@@ -31,7 +31,7 @@ rip_bucket = s3.Bucket('raw.kanshin.rip')
 
 class KanshinBrowser(RoboBrowser):
     def __init__(self, base_url='http://www.kanshin.com'):
-        super().__init__(parser="html.parser")
+        super().__init__(parser="html.parser", history=2)
 
         self.base_url = base_url
         self.user = None

@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
 import requests
+from . import sponsor
+
 
 URL = 'http://www.kanshin.com'
 LINK_FORMAT = '[{text}]({url})'
@@ -48,3 +50,14 @@ def extract_text(contents):
             if node.name == 'a':
                 text += LINK_FORMAT.format(url=node.get('href'), text=node.get_text())
     return text
+
+def extract_user(link):
+    name = link.get_text()
+    uid = link.get('href').split('/')[-1]
+
+    info = sponsor.find(uid)
+    if info:
+        return info
+    else:
+        return {'id': int(uid), 'name': name}
+

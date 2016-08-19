@@ -1,4 +1,4 @@
-from . import Page, URL, extract_text
+from . import Page, URL, extract_text, extract_user
 from bs4.element import Tag
 
 class DiaryPage(Page):
@@ -59,15 +59,19 @@ class DiaryPage(Page):
                 text = extract_text(texts).rstrip()
 
                 link = item.select('a')[0]
-                name = link.get_text()
-                uid = int(link.get('href').split('/')[-1])
+                user = extract_user(link)
 
-                comments.append({
-                    'user_id': uid,
-                    'user': name,
+                comment = {
+                    'user_id': user['id'],
+                    'user': user['name'],
                     'text': text,
                     'date': date,
-                })
+                }
+
+                if 'tag' in user:
+                    comment['sponsor'] = user['tag']
+
+                comments.append(comment)
 
         return comments
 
