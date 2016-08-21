@@ -2,8 +2,6 @@
 
 import boto3
 from boto3.dynamodb.conditions import Key
-from urllib.parse import urlparse
-import requests
 
 TABLE_PREFIX = 'kanshin-com-'
 USER_TABLE = TABLE_PREFIX + 'user'
@@ -27,46 +25,35 @@ def fetch_user(user_id):
 	else:
 		return None
 
-def save_user(id, **fields):
-    updates = dict([(key, {'Action': 'PUT', 'Value': fields[key]}) for key in fields])
-    user_table.update_item(
-        Key={'id': id},
-        AttributeUpdates=updates
-    )
+def save_user(user):
+    save_item(user_table, user)
 
 def save_diary(diary):
     for comment in diary['comments']:
-        save_user(comment['user_id'], name=comment['user'])
+        save_user(dict(id=comment['user_id'], name=comment['user']))
 
-    images = [save_image(url) for url in diary['images']]
+    save_item(diary_table, diary)
 
-    diary_table.update_item(
-        Key={'id': diary['id']},
-        AttributeUpdates={
-            'title': {'Action': 'PUT', 'Value': diary['title']},
-            'text': {'Action': 'PUT', 'Value': diary['text']},
-            'date': {'Action': 'PUT', 'Value': diary['date']},
-            'user_id': {'Action': 'PUT', 'Value': diary['user_id']},
-            'user': {'Action': 'PUT', 'Value': diary['user']},
-            'images': {'Action': 'PUT', 'Value': images},
-            'comments': {'Action': 'PUT', 'Value': diary['comments']},
-        }
-    )
-
-def save_image(url):
-    path = urlparse(url).path
-    obj = storage_bucket.Object(path[1:])
+def has_image(path):
+    obj = storage_bucket.Object(path)
 
     try:
         obj.metadata # test if obj exists
     except:
-        response = requests.get(url)
-        if response.status_code != 200:
-            return url
+        return False
 
-        body = response.content
-        content_type = response.headers['Content-Type']
-        obj.put(Body=body, ContentType=content_type, ACL='public-read')
+    return True
 
-    return 'http://s.kanshin.link' + path
+def save_image(path, content_type, content):
+    obj = storage_bucket.Object(path)
+    obj.put(Body=content, ContentType=content_type, ACL='public-read')
+
+# ----------------------
+
+def save_item(table, item):
+    updates = dict([(key, {'Action': 'PUT', 'Value': item[key]}) for key in item if key != 'id'])
+    table.update_item(
+        Key={'id': item['id']},
+        AttributeUpdates=updates
+    )
 

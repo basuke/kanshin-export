@@ -5,7 +5,6 @@ import sys
 sys.path.insert(0, os.path.abspath('.'))
 
 from kanshin.com.browser import KanshinBrowser
-from kanshin.data import save_user, save_diary
 import re
 
 
