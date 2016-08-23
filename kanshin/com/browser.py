@@ -5,6 +5,7 @@ from robobrowser.compat import urlparse
 import boto3
 from .diary import DiaryPage
 import requests_cache
+import sys
 
 class KanshinError(Exception):
     def __init__(self, value):
@@ -24,7 +25,7 @@ class URLError(KanshinError):
 s3 = boto3.resource('s3')
 rip_bucket = s3.Bucket('raw.kanshin.rip')
 
-CACHE_NAME = '.kanshin-cache'
+CACHE_NAME = '.kanshin-cache-{}.{}'.format(*sys.version_info[0:2])
 
 
 class KanshinBrowser(RoboBrowser):
