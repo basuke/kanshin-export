@@ -70,7 +70,7 @@ class DiaryPage(Page):
                 }
 
                 if 'tag' in user:
-                    comment['sponsor'] = user['tag']
+                    comment['tag'] = user['tag']
 
                 comments.append(comment)
 
