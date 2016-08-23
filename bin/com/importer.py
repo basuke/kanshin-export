@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import os.path
 import sys
@@ -23,18 +23,18 @@ def importer(user, cache):
         try:
             import_user(browser, user_id)
         except Exception as e:
-            logger.exception('failed to import user {}'.format(user_id))
+            logger.exception(u'failed to import user {}'.format(user_id))
 
 def import_user(browser, user_id):
     user = None
 
-    logger.debug('fetching diary ids for user id={id}'.format(id=user_id))
+    logger.debug(u'fetching diary ids for user id={id}'.format(id=user_id))
 
     diaries = browser.get_user_diaries(user_id)
-    logger.debug('find {count} diaries'.format(count=len(diaries)))
+    logger.debug(u'find {count} diaries'.format(count=len(diaries)))
 
     for info in diaries[:]:
-        logger.debug('fetching diary:{title} id={id}'.format(**info))
+        logger.debug(u'fetching diary:{title} id={id}'.format(**info))
         diary = browser.get_diary(info['id'])
 
         if not user:

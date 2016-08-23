@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from robobrowser import RoboBrowser
 from robobrowser.compat import urlparse
 import boto3
@@ -13,11 +15,11 @@ class KanshinError(Exception):
 
 class AuthError(KanshinError):
     def __init__(self, value="login is required"):
-        super().__init__(value)
+        super(AuthError, self).__init__(value)
 
 class URLError(KanshinError):
     def __init__(self, url, value="page not found: "):
-        super().__init__(value + url)
+        super(URLError, self).__init__(value + url)
 
 s3 = boto3.resource('s3')
 rip_bucket = s3.Bucket('raw.kanshin.rip')
@@ -31,7 +33,7 @@ class KanshinBrowser(RoboBrowser):
             print('caching in {}'.format(CACHE_NAME))
             requests_cache.install_cache(CACHE_NAME)
 
-        super().__init__(parser="html.parser", history=2)
+        super(KanshinBrowser, self).__init__(parser="html.parser", history=2)
 
         self.base_url = base_url
         self.user = None
@@ -40,7 +42,7 @@ class KanshinBrowser(RoboBrowser):
         if url[0:4] != 'http':
             url = urlparse.urljoin(self.base_url, url)
 
-        super().open(url, method, **kwargs)
+        super(KanshinBrowser, self).open(url, method, **kwargs)
 
         if self.response.status_code == 404:
             raise URLError(url)
@@ -104,7 +106,7 @@ def login_only(func):
 
 class KanshinLoginBrowser(KanshinBrowser):
     def __init__(self, email, password, base_url='http://www.kanshin.com', cache=False):
-        super().__init__(base_url, cache=False)
+        super(KanshinLoginBrowser, self).__init__(base_url, cache=False)
 
         self.login(email, password)
 

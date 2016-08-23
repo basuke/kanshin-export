@@ -1,9 +1,9 @@
 from kanshin.data import has_image, save_image
-from urllib.parse import urlparse
+from robobrowser.compat import urlparse
 import requests
 
 def import_image(url):
-    path = urlparse(url).path[1:]
+    path = urlparse.urlparse(url).path[1:]
 
     if not has_image(path):
         response = requests.get(url)

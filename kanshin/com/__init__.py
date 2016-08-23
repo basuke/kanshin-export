@@ -2,10 +2,11 @@ from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
 import requests
 from . import sponsor
+from builtins import str
 
 
 URL = 'http://www.kanshin.com'
-LINK_FORMAT = '[{text}]({url})'
+LINK_FORMAT = u'[{text}]({url})'
 
 class Page(object):
     def __init__(self, url, soup=None):

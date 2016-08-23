@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+
 from . import Page, URL, extract_text, extract_user
 from bs4.element import Tag
 
 class DiaryPage(Page):
     def __init__(self, diary_id, soup=None):
         self.diary_id = diary_id
-        super().__init__('%s/diary/%s' % (URL, diary_id, ), soup)
+        super(DiaryPage, self).__init__('%s/diary/%s' % (URL, diary_id, ), soup)
 
     @property
     def record(self):
@@ -41,7 +43,7 @@ class DiaryPage(Page):
     @property
     def user(self):
         user = extract_user(self.select('.topicpath ul a')[0])
-        name = user['name'].replace('の空間', '')
+        name = user['name'].replace(u'の空間', '')
         return {'name': name, 'id': user['id']}
 
     @property

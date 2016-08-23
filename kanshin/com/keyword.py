@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from . import Page, URL, extract_text
 from bs4.element import Tag
 import re
@@ -52,10 +54,10 @@ class DetailPage(Page):
     def get_stats(self):
         ul = self.select('.keywordAttributeSection ul').pop() # last UL in attributes section
         items = ul.select('li')
-        viewed = int(items.pop().get_text().strip().replace('クリック', ''))
-        created = items.pop().get_text().strip().replace('登録', '').replace('/', '-')
+        viewed = int(items.pop().get_text().strip().replace(u'クリック', ''))
+        created = items.pop().get_text().strip().replace(u'登録', '').replace('/', '-')
         if items:
-            updated = items.pop().get_text().strip().replace('更新', '').replace('/', '-')
+            updated = items.pop().get_text().strip().replace(u'更新', '').replace('/', '-')
         else:
             updated = created
 
@@ -163,12 +165,12 @@ class DetailPage(Page):
                     if 'connectionReasonOut' in cls:
                         links = li.select('a[href^=/connect/]')
                         if links:
-                            connection['in'] = links[0].get_text().replace('つながり', '')
+                            connection['in'] = links[0].get_text().replace(u'つながり', '')
 
                     if 'connectionReasonIn' in cls:
                         links = li.select('a[href^=/connect/]')
                         if links:
-                            connection['out'] = links[0].get_text().replace('つながり', '')
+                            connection['out'] = links[0].get_text().replace(u'つながり', '')
 
             elif 'item' in cls:
                 link = div.select('h3 a')[0]

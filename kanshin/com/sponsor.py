@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 sponsor_list = [
     { 'id': 95133, 'tag': 'sonoma', 'name': "sonoma" },
     { 'id': 41781, 'tag': 'roomflavor', 'name': "ルームフレーバー" },
