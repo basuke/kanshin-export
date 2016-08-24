@@ -4,17 +4,10 @@ from . import Page, URL, extract_text
 from bs4.element import Tag
 import re
 
-class ListPage(Page):
-    def __init__(self, user_id, p=1):
-        super(ListPage, self).__init__('%s/user/%s/keyword?od=create&p=%s' % (URL, user_id, p))
-
-    def keyword_pages(self):
-        return sorted(list(set([link.get('href') for link in self.select('#content a[href^=/keyword/]')])), reverse=True)
-
-class DetailPage(Page):
-    def __init__(self, keyword_id, soup=None):
+class KeywordPage(Page):
+    def __init__(self, keyword_id, data):
         self.keyword_id = keyword_id
-        super(DetailPage, self).__init__('%s/keyword/%s' % (URL, keyword_id, ), soup)
+        super(KeywordPage, self).__init__('%s/keyword/%s' % (URL, keyword_id, ), data)
 
     @property
     def record(self):

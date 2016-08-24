@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from kanshin.com.keyword import DetailPage as KeywordPage, ListPage as KeywordListPage
+from kanshin.com.keyword import KeywordPage
 from kanshin.com.diary import DiaryPage
 from kanshin.com.user import UserPage
-from bs4 import BeautifulSoup
 
 def load(path):
     with open('tests/data/' + path) as f:
-        return BeautifulSoup(f.read(), 'html.parser')
+        return f.read()
 
 def test_user():
     """ユーザーページ"""

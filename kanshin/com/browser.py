@@ -63,12 +63,12 @@ class KanshinBrowser(RoboBrowser):
         self.open('/diary/{did}'.format(did=diary_id))
         self.save_page()
 
-        record = DiaryPage(diary_id, self.parsed).record
+        record = DiaryPage(diary_id, self.response.text).record
 
         if self.parsed.select('.listNavAll a'):
             self.open('/diary/{did}/comment'.format(did=diary_id))
             self.save_page()
-            record['comments'] = DiaryPage(diary_id, self.parsed).comments
+            record['comments'] = DiaryPage(diary_id, self.response.text).comments
 
         return record
 

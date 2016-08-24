@@ -5,9 +5,9 @@ from bs4.element import Tag
 import re
 
 class UserPage(Page):
-    def __init__(self, user_id, soup=None):
+    def __init__(self, user_id, data):
         self.user_id = user_id
-        super(UserPage, self).__init__('%s/user/%s' % (URL, user_id, ), soup)
+        super(UserPage, self).__init__('%s/user/%s' % (URL, user_id, ), data)
 
     @property
     def record(self):
@@ -61,7 +61,6 @@ class UserPage(Page):
     @property
     def website(self):
         links = self.select('#profile .userProfileSection li a')
-        print(links)
         if links:
             return links[0].get('href')
         return None
