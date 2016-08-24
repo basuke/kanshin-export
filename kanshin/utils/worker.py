@@ -1,12 +1,13 @@
 import boto3
 import logging
 
-sqs = boto3.resource('sqs')
 logger = logging.getLogger(__name__)
 
 class Queue(object):
 	def __init__(self, queue_name):
 		self.queue_name = queue_name
+
+		sqs = boto3.resource('sqs')
 		self.queue = sqs.create_queue(QueueName=queue_name)
 
 	def send(self, body):
