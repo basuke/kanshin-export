@@ -1,13 +1,47 @@
 # -*- coding: utf-8 -*-
 
-from kanshin.com.keyword import DetailPage as KeywordPage, ListPage as KeywordListPage
+from kanshin.com.keyword import KeywordPage
 from kanshin.com.diary import DiaryPage
-from bs4 import BeautifulSoup
+from kanshin.com.user import UserPage
 
 def load(path):
     with open('tests/data/' + path) as f:
-        return BeautifulSoup(f.read(), 'html.parser')
+        return f.read()
 
+def test_user():
+    """ユーザーページ"""
+    user = UserPage(2, load('user-2.html'))
+
+    assert user.id == 2
+    assert user.tag is None
+    assert user.name == u'バスケ'
+    assert user.profile.find(u'カレーが好き') > 0
+    assert user.twitter == u'basuke'
+    assert user.created == u'2001-08-21'
+    assert user.updated == u'2016-08-17'
+    assert user.image == u"http://storage.kanshin.com/free/img_10/105363/1116317867.gif"
+    assert user.website == u'http://saryo.org/basuke/'
+
+def test_sponsor_user():
+    """スポンサー空間"""
+    user = UserPage('planted', load('user-planted.html'))
+
+    assert user.id == 42756
+    assert user.tag == 'planted'
+
+def test_simple_user():
+    """内容がほぼ空のユーザー"""
+    user = UserPage(98535, load('user-98535.html'))
+
+    assert user.id == 98535
+    assert user.tag == None
+    assert user.name == u'miimo0201'
+    assert user.profile.find(u'ひきこもり') > 0
+    assert user.created == u'2016-08-06'
+    assert user.updated == u'2016-08-06'
+    assert user.twitter is None
+    assert user.image is None
+    assert user.website is None
 
 def test_keyword():
     """通常のキーワードページの解析"""
@@ -74,9 +108,9 @@ def test_diary():
     assert diary.date == u'2010-12-13'
     assert diary.user == {'name': u'バスケ', 'id': 2}
 
-def test_sponsor():
+def test_sponsor_comment():
     """スポンサーユーザー関係の解析"""
     diary = DiaryPage(1192187, load('diary-1192187.html'))
 
-    assert diary.comments[-1]['sponsor'] == 'planted'
+    assert diary.comments[-1]['tag'] == 'planted'
     assert diary.comments[-1]['user_id'] == 42756

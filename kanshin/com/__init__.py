@@ -9,14 +9,10 @@ URL = 'http://www.kanshin.com'
 LINK_FORMAT = u'[{text}]({url})'
 
 class Page(object):
-    def __init__(self, url, soup=None):
+    def __init__(self, url, data):
         self.url = url
 
-        if soup:
-            self.soup = soup
-        else:
-            response = requests.get(self.url)
-            self.soup = BeautifulSoup(response.text, 'html.parser')
+        self.soup = BeautifulSoup(data, 'html.parser')
 
     def find(self, tag):
         return self.soup.find_all(tag)

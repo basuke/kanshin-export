@@ -2,10 +2,10 @@
 
 from robobrowser import RoboBrowser
 from robobrowser.compat import urlparse
-import boto3
 from .diary import DiaryPage
 import requests_cache
 import sys
+from kanshin.com.cache import save_page
 
 class KanshinError(Exception):
     def __init__(self, value):
@@ -21,9 +21,6 @@ class AuthError(KanshinError):
 class URLError(KanshinError):
     def __init__(self, url, value="page not found: "):
         super(URLError, self).__init__(value + url)
-
-s3 = boto3.resource('s3')
-rip_bucket = s3.Bucket('raw.kanshin.rip')
 
 CACHE_NAME = '.kanshin-cache-{}.{}'.format(*sys.version_info[0:2])
 
@@ -50,12 +47,11 @@ class KanshinBrowser(RoboBrowser):
 
     def save_page(self):
         if not self.user:
-            path = urlparse.urlparse(self.response.url).path[1:]
+            path = urlparse.urlparse(self.response.url).path
             content_type = self.response.headers['content-type']
             content = self.response.text
 
-            obj = rip_bucket.Object(path)
-            obj.put(Body=content, ContentType=content_type, ACL='public-read')
+            save_page(path, content_type, content)
 
     def get_user_diaries(self, user_id):
         links = self.paginate_select('/user/{uid}/diary'.format(uid=user_id), 'h3 a')
@@ -68,12 +64,12 @@ class KanshinBrowser(RoboBrowser):
         self.open('/diary/{did}'.format(did=diary_id))
         self.save_page()
 
-        record = DiaryPage(diary_id, self.parsed).record
+        record = DiaryPage(diary_id, self.response.text).record
 
         if self.parsed.select('.listNavAll a'):
             self.open('/diary/{did}/comment'.format(did=diary_id))
             self.save_page()
-            record['comments'] = DiaryPage(diary_id, self.parsed).comments
+            record['comments'] = DiaryPage(diary_id, self.response.text).comments
 
         return record
 

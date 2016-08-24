@@ -4,9 +4,9 @@ from . import Page, URL, extract_text, extract_user
 from bs4.element import Tag
 
 class DiaryPage(Page):
-    def __init__(self, diary_id, soup=None):
+    def __init__(self, diary_id, data):
         self.diary_id = diary_id
-        super(DiaryPage, self).__init__('%s/diary/%s' % (URL, diary_id, ), soup)
+        super(DiaryPage, self).__init__('%s/diary/%s' % (URL, diary_id, ), data)
 
     @property
     def record(self):
@@ -70,7 +70,7 @@ class DiaryPage(Page):
                 }
 
                 if 'tag' in user:
-                    comment['sponsor'] = user['tag']
+                    comment['tag'] = user['tag']
 
                 comments.append(comment)
 
