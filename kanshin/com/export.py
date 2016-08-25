@@ -23,15 +23,12 @@ def import_image(url):
 
     return 'http://s.kanshin.link' + path
 
-def key_for(kind, id):
-	return '{kind}.{id}'.format(kind=kind, id=id)
-
 def is_imported(kind, id):
-	result = import_table.query(KeyConditionExpression=Key('id').eq(key_for(kind, id)))
+	result = import_table.query(KeyConditionExpression=Key('kind').eq(kind) & Key('id').eq('{}'.format(id)))
 	if 'Items' in result  and result['Items']:
 		return result['Items'][0]
 	else:
 		return False
 
 def mark_imported(kind, id):
-	save_item(import_table, {'id': key_for(kind, id), 'timestamp': int(time.time() * 1000)})
+	save_item(import_table, {'id': '{}'.format(id), 'kind': kind, 'timestamp': int(time.time() * 1000)}, ['kind', 'id'])

@@ -30,12 +30,18 @@ def fetch_user(user_id):
 		return None
 
 def save_user(item):
+    item['id'] = int(item['id'])
     save_item(user_table, item)
 
 def save_keyword(item):
+    item['id'] = int(item['id'])
     save_item(keyword_table, item)
 
+def save_connection(id1, id2, out_reason=None, in_reason=None):
+    save_item(connection_table, dict(id=int(id1), other_id=int(id2), out_reason=out_reason, in_reason=in_reason), ['id', 'other_id'])
+
 def save_diary(item):
+    item['id'] = int(item['id'])
     save_item(diary_table, item)
 
 def has_image(path):
@@ -57,12 +63,12 @@ def save_image(path, content_type, content):
 def key_for(item, pk_keys):
     return dict([(key, item[key]) for key in item if key in pk_keys])
 
-def updates_for_item(item, pk_keys):
-    return dict([(key, {'Action': 'PUT', 'Value': item[key]}) for key in item if key not in pk_keys])
+def updates_for(item, pk_keys):
+    return dict([(key, {'Action': 'PUT', 'Value': item[key]}) for key in item if key not in pk_keys and item[key] is not None])
 
 def save_item(table, item, pk_keys=['id']):
     table.update_item(
         Key=key_for(item, pk_keys),
-        AttributeUpdates=updates_for_item(item, pk_keys)
+        AttributeUpdates=updates_for(item, pk_keys)
     )
 

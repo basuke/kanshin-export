@@ -73,6 +73,21 @@ class KanshinBrowser(RoboBrowser):
             self.save_page()
             record['comments'] = KeywordPage(keyword_id, self.response.text).comments
 
+        if page.more_connections:
+            p = 1
+            result = []
+            while True:
+                self.open('/keyword/{kid}/connect?p={p}'.format(kid=keyword_id, p=p))
+                self.save_page()
+                connections = KeywordPage(keyword_id, self.response.text).connections
+                if not connections:
+                    break
+
+                result += connections
+                p += 1
+
+            record['connections'] = result
+
         return record
 
     def get_user_diaries(self, user_id):

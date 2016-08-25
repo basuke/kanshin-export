@@ -47,6 +47,10 @@ class DiaryPage(Page):
         return {'name': name, 'id': user['id']}
 
     @property
+    def more_comments(self):
+        return len(self.select('#comment .listNavAll')) > 0
+
+    @property
     def comments(self):
         container = self.select('#comment div.body')[0]
         items = (item for item in container.contents if type(item) == Tag)
