@@ -1,31 +1,50 @@
 import boto3
 import logging
+from inspect import getargspec
 
-logger = logging.getLogger(__name__)
 
 class Queue(object):
-	def __init__(self, queue_name):
+	def __init__(self, queue_name, region_name='us-west-1'):
 		self.queue_name = queue_name
 
-		sqs = boto3.resource('sqs')
+		self.logger = logging.getLogger('q:{}'.format(self.queue_name))
+		self.logger.setLevel(logging.INFO)
+
+		sqs = boto3.resource('sqs', region_name=region_name)
 		self.queue = sqs.create_queue(QueueName=queue_name)
 
 	def send(self, body):
-		logger.info('q "{}" send "{}"'.format(self.queue_name, body))
+		self.logger.info('<<< "{}"'.format(body))
 		self.queue.send_message(MessageBody=u'{}'.format(body))
 
 	def listen(self, task):
-		logger.info('q "{}" ready'.format(self.queue_name))
+		self.logger.info('ready')
+
+		args = []
+		kwargs = {}
+
+		spec = getargspec(task)
+
+		if 'logger' in spec.args:
+			kwargs['logger'] = self.logger
+
+		if 'queue' in spec.args:
+			kwargs['queue'] = self.queue
+
+		need_message = ('message' in spec.args)
 
 		while True:
 			messages = self.queue.receive_messages(WaitTimeSeconds=20)
 
 			for message in messages:
-				logger.info('q "{}" receive "{}"'.format(self.queue_name, message.body))
+				self.logger.info('>>> "{}"'.format(message.body))
+
+				if need_message:
+					kwargs['message'] = self.logger
 
 				try:
-					task(message.body)
+					task(message.body, **kwargs)
 					message.delete()
 				except Exception as e:
-					logger.exception(self.queue_name)
+					self.logger.exception(self.queue_name)
 

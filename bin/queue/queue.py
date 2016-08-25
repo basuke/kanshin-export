@@ -2,17 +2,25 @@
 
 import os.path
 import sys
+
 sys.path.insert(0, os.path.abspath('.'))
+
+import logging
+from kanshin.utils.worker import Queue
+from kanshin.data import has_image, save_image
+from robobrowser.compat import urlparse
+from kanshin.com.export import is_imported, mark_imported
+from kanshin.com.browser import KanshinBrowser, URLError
+from kanshin.com.cache import get_page, is_page_saved
 
 program = sys.argv[0]
 argv = sys.argv[1:]
 
-import logging
-
 logging.basicConfig(level=logging.WARNING)
 
-from kanshin.utils.worker import Queue, logger
+logger = logging.getLogger('main')
 logger.setLevel(logging.INFO)
+
 
 # queues
 
@@ -55,21 +63,18 @@ class QueueFactory(object):
 
 queues = QueueFactory()
 
-from kanshin.data import has_image, save_image
-from robobrowser.compat import urlparse
-from kanshin.com.export import is_imported, mark_imported
-from kanshin.com.browser import KanshinBrowser, URLError
-from kanshin.com.cache import get_page, is_page_saved
-
 
 def is_kanshin_image_url(url):
     return urlparse.urlparse(url).hostname == 'storage.kanshin.com'
 
+
 def convert_kanshin_image_url(url):
     return 'http://s.kanshin.link' + path_of_image(url)
 
+
 def path_of_image(url):
     return urlparse.urlparse(url).path
+
 
 def convert_kanshin_images(urls, q):
     result = []
@@ -82,6 +87,7 @@ def convert_kanshin_images(urls, q):
         result.append(url)
 
     return result
+
 
 def download(kind, id):
     path = '/{kind}/{id}'.format(kind=kind, id=id)
@@ -107,6 +113,7 @@ def download(kind, id):
 
     return True
 
+
 def fetch_page(kind, id, action):
     path = '/{kind}/{id}'.format(kind=kind, id=id)
 
@@ -124,9 +131,11 @@ def fetch_page(kind, id, action):
 
     mark_imported(kind, id)
 
+
 def cli(queue, job):
     if argv:
         for arg in argv:
             job(arg)
     else:
         queue.listen(job)
+
