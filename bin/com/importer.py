@@ -42,6 +42,9 @@ def import_user(browser, user_id):
 
         diary['images'] = [import_image(url) for url in diary['images']]
 
+        for comment in diary['comments']:
+            save_user(dict(id=comment['user_id'], name=comment['user']))
+
         save_diary(diary)
 
     if user:

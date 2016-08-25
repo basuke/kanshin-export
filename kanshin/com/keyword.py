@@ -24,6 +24,8 @@ class KeywordPage(Page):
             "user_id": self.user['id'],
             "user": self.user['name'],
             "attributes": self.attributes,
+            "comments": self.comments,
+            "connections": self.connections,
         }
 
     @property

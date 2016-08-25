@@ -3,12 +3,16 @@
 import boto3
 from boto3.dynamodb.conditions import Key
 
-TABLE_PREFIX = 'kanshin-com-'
+TABLE_PREFIX = 'KanshinCom-'
 USER_TABLE = TABLE_PREFIX + 'user'
+KEYWORD_TABLE = TABLE_PREFIX + 'keyword'
+CONNECTION_TABLE = TABLE_PREFIX + 'connection'
 DIARY_TABLE = TABLE_PREFIX + 'diary'
 
-dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-1')
+dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 user_table = dynamodb.Table(USER_TABLE)
+keyword_table = dynamodb.Table(KEYWORD_TABLE)
+connection_table = dynamodb.Table(CONNECTION_TABLE)
 diary_table = dynamodb.Table(DIARY_TABLE)
 
 s3 = boto3.resource('s3')
@@ -25,14 +29,14 @@ def fetch_user(user_id):
 	else:
 		return None
 
-def save_user(user):
-    save_item(user_table, user)
+def save_user(item):
+    save_item(user_table, item)
 
-def save_diary(diary):
-    for comment in diary['comments']:
-        save_user(dict(id=comment['user_id'], name=comment['user']))
+def save_keyword(item):
+    save_item(keyword_table, item)
 
-    save_item(diary_table, diary)
+def save_diary(item):
+    save_item(diary_table, item)
 
 def has_image(path):
     obj = storage_bucket.Object(path)
@@ -50,10 +54,15 @@ def save_image(path, content_type, content):
 
 # ----------------------
 
-def save_item(table, item):
-    updates = dict([(key, {'Action': 'PUT', 'Value': item[key]}) for key in item if key != 'id'])
+def key_for(item, pk_keys):
+    return dict([(key, item[key]) for key in item if key in pk_keys])
+
+def updates_for_item(item, pk_keys):
+    return dict([(key, {'Action': 'PUT', 'Value': item[key]}) for key in item if key not in pk_keys])
+
+def save_item(table, item, pk_keys=['id']):
     table.update_item(
-        Key={'id': item['id']},
-        AttributeUpdates=updates
+        Key=key_for(item, pk_keys),
+        AttributeUpdates=updates_for_item(item, pk_keys)
     )
 

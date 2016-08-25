@@ -4,16 +4,15 @@ from queue import *
 
 from kanshin.com.browser import KanshinBrowser, URLError
 
+user_collect_diaries = queues.user_collect_diaries
+diary_download = queues.diary_download
+
 def job(user_id):
     browser = KanshinBrowser()
 
     logger.info('collecting diary ids for user {}'.format(user_id))
 
-    links = browser.paginate_select('/user/{uid}/diary'.format(uid=user_id), '.keyword h2 a')
-    ids = [int(link.get('href').split('/').pop()) for link in links]
+    for diary in browser.get_user_diaries(user_id):
+        diary_download.send(diary['id'])
 
-    logger.info('found {} diaries'.format(len(ids)))
-    for diary_id in ids:
-        diary_download.send(diary_id)
-
-user_collect_diaries.listen(job)
+cli(user_collect_diaries, job)

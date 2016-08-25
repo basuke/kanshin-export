@@ -4,16 +4,15 @@ from queue import *
 
 from kanshin.com.browser import KanshinBrowser, URLError
 
+user_collect_keywords = queues.user_collect_keywords
+keyword_download = queues.keyword_download
+
 def job(user_id):
     browser = KanshinBrowser()
 
     logger.info('collecting keyword ids for user {}'.format(user_id))
 
-    links = browser.paginate_select('/user/{uid}/keyword'.format(uid=user_id), 'h3 a')
-    ids = [int(link.get('href').split('/').pop()) for link in links]
+    for keyword in browser.get_user_keywords(user_id):
+        keyword_download.send(keyword['id'])
 
-    logger.info('found {} keywords'.format(len(ids)))
-    for keyword_id in ids:
-        keyword_download.send(keyword_id)
-
-user_collect_keywords.listen(job)
+cli(user_collect_keywords, job)

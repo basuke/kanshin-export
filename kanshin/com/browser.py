@@ -2,6 +2,7 @@
 
 from robobrowser import RoboBrowser
 from robobrowser.compat import urlparse
+from .keyword import KeywordPage
 from .diary import DiaryPage
 import requests_cache
 import sys
@@ -53,20 +54,42 @@ class KanshinBrowser(RoboBrowser):
 
             save_page(path, content_type, content)
 
-    def get_user_diaries(self, user_id):
-        links = self.paginate_select('/user/{uid}/diary'.format(uid=user_id), 'h3 a')
-        return [{
+    def get_user_keywords(self, user_id):
+        links = self.paginate_select('/user/{uid}/keyword'.format(uid=user_id), '.keyword h2 a')
+        return ({
             'id': int(link.get('href').split('/').pop()),
             'title': link.get_text()
-        } for link in links]
+        } for link in links)
+
+    def get_keyword(self, keyword_id):
+        self.open('/keyword/{kid}'.format(kid=keyword_id))
+        self.save_page()
+
+        page = KeywordPage(keyword_id, self.response.text)
+        record = page.record
+
+        if page.more_comments:
+            self.open('/keyword/{kid}/comment'.format(kid=keyword_id))
+            self.save_page()
+            record['comments'] = KeywordPage(keyword_id, self.response.text).comments
+
+        return record
+
+    def get_user_diaries(self, user_id):
+        links = self.paginate_select('/user/{uid}/diary'.format(uid=user_id), 'h3 a')
+        return ({
+            'id': int(link.get('href').split('/').pop()),
+            'title': link.get_text()
+        } for link in links)
 
     def get_diary(self, diary_id):
         self.open('/diary/{did}'.format(did=diary_id))
         self.save_page()
 
-        record = DiaryPage(diary_id, self.response.text).record
+        page = DiaryPage(diary_id, self.response.text)
+        record = page.record
 
-        if self.parsed.select('.listNavAll a'):
+        if page.more_comments:
             self.open('/diary/{did}/comment'.format(did=diary_id))
             self.save_page()
             record['comments'] = DiaryPage(diary_id, self.response.text).comments
@@ -74,7 +97,6 @@ class KanshinBrowser(RoboBrowser):
         return record
 
     def paginate_select(self, url, selector):
-        result = []
         page = 1
         count = 100
         url += '?' if url.find('?') < 0 else '&'
@@ -86,12 +108,11 @@ class KanshinBrowser(RoboBrowser):
             self.save_page()
             items = self.parsed.select(selector)
             if len(items) == 0:
-                break
+                return
 
-            result += items
+            for item in items:
+                yield item
             page += 1
-
-        return result
 
 def login_only(func):
     def wrapper(self, *args, **kwargs):
@@ -134,26 +155,26 @@ class KanshinLoginBrowser(KanshinBrowser):
     @login_only
     def get_my_diaries(self):
         links = self.paginate_select('/home/diary', 'td.name a')
-        return [{
+        return ({
             'id': int(link.get('href').split('/').pop()),
             'title': link.get('title')
-        } for link in links]
+        } for link in links)
 
     @login_only
     def get_bookmarked_users(self):
         links = self.paginate_select('/home/bookmark?show=user', 'td.name a')
 
-        return [{
+        return ({
             'id': int(link.get('href').split('/').pop()),
             'name': link.get_text()
-        } for link in links]
+        } for link in links)
 
     @login_only
     def get_bookmarked_keywords(self):
         links = self.paginate_select('/home/bookmark?show=keyword', 'td.name a')
 
-        return [{
+        return ({
             'id': int(link.get('href').split('/').pop()),
             'title': link.get_text()
-        } for link in links]
+        } for link in links)
 
