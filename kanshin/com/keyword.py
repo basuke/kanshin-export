@@ -97,11 +97,11 @@ class KeywordPage(Page):
             key = li.select('.key')
             value = li.select('.value')
             if key and value:
-                item = {
-                    'name': key[0].get_text().split(':')[0],
-                    'value': value[0].get_text().strip()
-                }
-                attributes.append(item)
+                name = key[0].get_text().split(':')[0]
+                value = value[0].get_text().strip()
+
+                if name and value:
+                    attributes.append({'name': name, 'value': value})
             else:
                 link = li.select('a')
                 if link:
