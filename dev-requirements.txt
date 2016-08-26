@@ -1,1 +1,3 @@
 nose
+awscli
+ipython
