@@ -150,6 +150,10 @@ class KeywordPage(Page):
 
     @property
     def connections(self):
+        def reason(links):
+            str = links[0].get_text().replace(u'つながり', '')
+            return str if str else 'つながり'
+
         connections = []
         connection = {}
         for div in self.select('#connection > div'):
@@ -160,12 +164,12 @@ class KeywordPage(Page):
                     if 'connectionReasonOut' in cls:
                         links = li.select('a[href^=/connect/]')
                         if links:
-                            connection['in'] = links[0].get_text().replace(u'つながり', '')
+                            connection['in'] = reason(links)
 
                     if 'connectionReasonIn' in cls:
                         links = li.select('a[href^=/connect/]')
                         if links:
-                            connection['out'] = links[0].get_text().replace(u'つながり', '')
+                            connection['out'] = reason(links)
 
             elif 'item' in cls:
                 link = div.select('h3 a')[0]
