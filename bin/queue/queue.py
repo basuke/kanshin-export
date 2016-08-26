@@ -118,7 +118,7 @@ def fetch_page(kind, id, action):
     path = '/{kind}/{id}'.format(kind=kind, id=id)
 
     if is_imported(kind, id):
-        logger.info('{} is already imported'.format(path))
+        # logger.info('{} is already imported'.format(path))
         return None
 
     if not is_page_saved(path):

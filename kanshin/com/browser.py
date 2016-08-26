@@ -114,13 +114,13 @@ class KanshinBrowser(RoboBrowser):
     def paginate_select(self, url, selector):
         page = 1
         count = 100
-        url += '?' if url.find('?') < 0 else '&'
+
+        self.open(url)
+        self.save_page()
+
+        url = self.url
 
         while True:
-            tmp_url = url + 'p={p}&cn={cn}'.format(p=page, cn=count)
-
-            self.open(tmp_url)
-            self.save_page()
             items = self.parsed.select(selector)
             if len(items) == 0:
                 return
@@ -128,6 +128,12 @@ class KanshinBrowser(RoboBrowser):
             for item in items:
                 yield item
             page += 1
+
+            tmp_url = url + ('?' if url.find('?') < 0 else '&') + 'p={p}&cn={cn}'.format(p=page, cn=count)
+
+            self.open(tmp_url)
+            self.save_page()
+
 
 def login_only(func):
     def wrapper(self, *args, **kwargs):

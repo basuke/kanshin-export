@@ -8,6 +8,10 @@ user_collect_keywords = queues.user_collect_keywords
 keyword_download = queues.keyword_download
 
 def job(user_id):
+    if is_imported('user', user_id):
+        logger.info('user {} is already imported'.format(user_id))
+        return
+
     browser = KanshinBrowser()
 
     logger.info('collecting keyword ids for user {}'.format(user_id))

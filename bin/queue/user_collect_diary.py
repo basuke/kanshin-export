@@ -8,6 +8,10 @@ user_collect_diaries = queues.user_collect_diaries
 diary_download = queues.diary_download
 
 def job(user_id):
+    if is_imported('user', user_id):
+        logger.info('user {} is already imported'.format(user_id))
+        return
+
     browser = KanshinBrowser()
 
     logger.info('collecting diary ids for user {}'.format(user_id))
