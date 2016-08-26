@@ -1,6 +1,6 @@
 import boto3
 
-s3 = boto3.resource('s3')
+s3 = boto3.resource('s3', region_name='us-west-2')
 rip_bucket = s3.Bucket('raw.kanshin.rip')
 
 def get_page(path):
