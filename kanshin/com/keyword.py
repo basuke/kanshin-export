@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from . import Page, URL, extract_text
+from . import Page, URL, extract_text, build_user
 from bs4.element import Tag
 import re
 
@@ -83,8 +83,8 @@ class KeywordPage(Page):
     def user(self):
         sec = self.select('.userProfileSection')[0]
         name = sec.select('.head')[0].get_text()
-        uid = int(sec.select('a')[0].get('href').split('/')[-1])
-        return {'name': name, 'id': uid}
+        uid = sec.select('a')[0].get('href').split('/')[-1]
+        return build_user(uid, name)
 
     @property
     def attributes(self):
@@ -116,7 +116,11 @@ class KeywordPage(Page):
 
     @property
     def comments(self):
-        container = self.select('#comment div.body')[0]
+        try:
+            container = self.select('#comment div.body')[0]
+        except:
+            return []
+
         items = (item for item in container.contents if type(item) == Tag)
         comments = []
         date = None

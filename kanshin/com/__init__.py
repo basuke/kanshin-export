@@ -49,12 +49,13 @@ def extract_text(contents):
     return text
 
 def extract_user(link):
-    name = link.get_text()
     uid = link.get('href').split('/')[-1]
+    name = link.get_text()
+    return build_user(uid, name)
 
+def build_user(uid, name):
     info = sponsor.find(uid)
     if info:
         return info
     else:
         return {'id': int(uid), 'name': name}
-
