@@ -39,7 +39,8 @@ def copy(src, dest, filter_fn=None):
     for message in ls(src):
         if not filter_fn or filter_fn(message.body):
             send(dest, message.body)
-            message.delete()
+
+        message.delete()
 
 def ls(src):
     while True:
