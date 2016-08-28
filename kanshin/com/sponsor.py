@@ -106,7 +106,12 @@ sponsor_list = [
     { 'id': 34918, 'tag': u'buyma', 'name': u"バイマ" },
     { 'id': 35980, 'tag': u'nioh', 'name': u"仁王" },
 
+    { 'id': 51190, 'tag': u'comicbeamiiwai', 'name': u"コミックビーム　岩井っス" },
+    { 'id': 48050, 'tag': u'kataokayoshiro', 'name': u"片岡義朗" },
+    { 'id': 54409, 'tag': u'junji-naito', 'name': u"内藤順司" },
     { 'id': 47163, 'tag': u'takeshitadaigaku', 'name': u"育種家 竹下大学" },
+    { 'id': 9569, 'tag': u'dayorin', 'name': u"ダヨリン" },
+    { 'id': 54064, 'tag': u'yagyushingo', 'name': u"柳生真吾" },
 ]
 
 def find(tag):
