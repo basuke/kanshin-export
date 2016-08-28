@@ -4,7 +4,7 @@ from inspect import getargspec
 
 
 class Queue(object):
-	def __init__(self, queue_name, region_name='us-west-1'):
+	def __init__(self, queue_name, region_name='us-west-2'):
 		self.queue_name = queue_name
 
 		self.logger = logging.getLogger('q:{}'.format(self.queue_name))

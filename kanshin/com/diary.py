@@ -52,7 +52,11 @@ class DiaryPage(Page):
 
     @property
     def comments(self):
-        container = self.select('#comment div.body')[0]
+        try:
+            container = self.select('#comment div.body')[0]
+        except:
+            return []
+
         items = (item for item in container.contents if type(item) == Tag)
         comments = []
         date = None
