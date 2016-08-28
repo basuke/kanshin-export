@@ -73,10 +73,14 @@ class KeywordPage(Page):
 
     @property
     def category(self):
-        ul = self.select('.keywordAttributeSection ul')[0] # first UL in attributes section
-        link = ul.select('a')[0]
-        name = link.get_text()
-        cid = int(link.get('href').split('=')[1])
+        try:
+            ul = self.select('.keywordAttributeSection ul')[0] # first UL in attributes section
+            link = ul.select('a')[0]
+            name = link.get_text()
+            cid = int(link.get('href').split('=')[1])
+        except:
+            name, cid = u'ノンカテゴリー', 1000
+
         return {'name': name, 'id': cid}
 
     @property
