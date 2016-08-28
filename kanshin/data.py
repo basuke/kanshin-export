@@ -15,7 +15,7 @@ keyword_table = dynamodb.Table(KEYWORD_TABLE)
 connection_table = dynamodb.Table(CONNECTION_TABLE)
 diary_table = dynamodb.Table(DIARY_TABLE)
 
-s3 = boto3.resource('s3')
+s3 = boto3.resource('s3', region_name='ap-northeast-1')
 storage_bucket = s3.Bucket('s.kanshin.link')
 
 def fetch_user_diaries(user_id):
