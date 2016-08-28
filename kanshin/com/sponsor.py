@@ -105,6 +105,8 @@ sponsor_list = [
     { 'id': 34675, 'tag': u'kinshoku', 'name': u"錦食伝説" },
     { 'id': 34918, 'tag': u'buyma', 'name': u"バイマ" },
     { 'id': 35980, 'tag': u'nioh', 'name': u"仁王" },
+
+    { 'id': 47163, 'tag': u'takeshitadaigaku', 'name': u"育種家 竹下大学" },
 ]
 
 def find(tag):
