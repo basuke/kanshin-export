@@ -135,14 +135,20 @@ class KeywordPage(Page):
 
                 link = item.select('a')[0]
                 name = link.get_text()
-                uid = int(link.get('href').split('/')[-1])
+                uid = link.get('href').split('/')[-1]
+                user = build_user(uid, name)
 
-                comments.append({
-                    'user_id': uid,
-                    'user': name,
+                comment = {
+                    'user_id': user['id'],
+                    'user': user['name'],
                     'text': text,
                     'date': date,
-                })
+                }
+
+                if 'tag' in user:
+                    comment['tag'] = user['tag']
+
+                comments.append(comment)
 
         return comments
 
