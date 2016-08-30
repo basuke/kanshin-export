@@ -64,7 +64,20 @@ def key_for(item, pk_keys):
     return dict([(key, item[key]) for key in item if key in pk_keys])
 
 def updates_for(item, pk_keys):
-    return dict([(key, {'Action': 'PUT', 'Value': item[key]}) for key in item if key not in pk_keys and item[key] is not None])
+    updates = {}
+
+    for key in item:
+        if key not in pk_keys:
+            value = item[key]
+
+            if value is None or value == '':
+                value = {'Action': 'DELETE'}
+            else:
+                value = {'Action': 'PUT', 'Value': value}
+
+            updates[key] = value
+
+    return updates
 
 def save_item(table, item, pk_keys=['id']):
     table.update_item(
