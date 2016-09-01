@@ -152,7 +152,8 @@ class KeywordPage(Page):
                 if 'tag' in user:
                     comment['tag'] = user['tag']
 
-                comments.append(comment)
+                if text and date:
+                    comments.append(comment)
 
         return comments
 
