@@ -114,8 +114,8 @@ def download(kind, id):
     return True
 
 
-def fetch_page(kind, id, action):
-    path = '/{kind}/{id}'.format(kind=kind, id=id)
+def fetch_page(kind, id, action, path=None):
+    path = path if path else '/{kind}/{id}'.format(kind=kind, id=id)
 
     if is_imported(kind, id):
         # logger.info('{} is already imported'.format(path))

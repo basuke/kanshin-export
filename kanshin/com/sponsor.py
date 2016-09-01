@@ -124,3 +124,8 @@ def find_id(tag):
     sponsor = find(tag)
     return sponsor['id'] if sponsor else None
 
+def find_tag(id):
+    for sponsor in sponsor_list:
+        if id == sponsor['id']:
+            return sponsor['tag']
+    return None

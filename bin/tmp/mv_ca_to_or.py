@@ -28,9 +28,9 @@ def copy(src, dest, filter_fn=None):
 
             message.delete()
 
-def ls(src):
+def ls(src, timeout=30):
     while True:
-        messages = src.receive_messages(VisibilityTimeout=30, MaxNumberOfMessages=10)
+        messages = src.receive_messages(VisibilityTimeout=timeout, MaxNumberOfMessages=10)
         if not messages:
             break
 
@@ -45,3 +45,5 @@ def echo(x):
     print(x)
     return True
 
+def peek(src):
+    return [m.body for m in ls(src, timeout=2)]

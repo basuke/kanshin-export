@@ -4,6 +4,8 @@ from queue import *
 
 from kanshin.com.user import UserPage
 from kanshin.data import save_user
+import kanshin.com.sponsor
+
 
 user_parse = queues.user_parse
 image_download = queues.image_download
@@ -20,6 +22,8 @@ def job(user_id):
         logger.info('save user {}'.format(user_id))
         save_user(record)
 
-    fetch_page('user', user_id, with_html)
+    tag = kanshin.com.sponsor.find_tag(int(user_id))
+
+    fetch_page('user', user_id, with_html, '/user/' + (tag if tag else user_id))
 
 cli(user_parse, job)
