@@ -18,16 +18,21 @@ diary_table = dynamodb.Table(DIARY_TABLE)
 s3 = boto3.resource('s3', region_name='ap-northeast-1')
 storage_bucket = s3.Bucket('s.kanshin.link')
 
+
 def fetch_user_diaries(user_id):
-    result = diary_table.query(IndexName='user_id-date-index-copy', KeyConditionExpression=Key('user_id').eq(user_id))
-    return result['Items']
+    query_args = dict(
+        IndexName='byUser',
+        KeyConditionExpression=Key('user_id').eq(user_id),
+        ProjectionExpression='id'
+    )
+
+    for item in query(diary_table, **query_args):
+        yield(get_item(diary_table, item['id']))
+
 
 def fetch_user(user_id):
-	result = user_table.query(KeyConditionExpression=Key('id').eq(user_id))
-	if 'Items' in result  and result['Items']:
-		return result['Items'][0]
-	else:
-		return None
+    return get_item(user_table, user_id)
+
 
 def save_user(item):
     item['id'] = int(item['id'])
@@ -60,8 +65,38 @@ def save_image(path, content_type, content):
 
 # ----------------------
 
+def get_item(table, id=None, **kwargs):
+    if id is not None:
+        kwargs['KeyConditionExpression'] = Key('id').eq(id)
+
+    result = table.query(**kwargs)
+    if result['Items'] and len(result['Items']) > 0:
+        return result['Items'][0]
+    else:
+        return None
+
+
+def query(table, **kwargs):
+    startKey = None
+
+    while True:
+        if startKey:
+            kwargs['ExclusiveStartKey'] = startKey
+        elif 'ExclusiveStartKey' in kwargs:
+            del kwargs['ExclusiveStartKey']
+
+        result = table.query(**kwargs)
+        for item in result['Items']:
+            yield item
+
+        startKey = result.get('LastEvaluatedKey')
+        if not startKey:
+            break
+
+
 def key_for(item, pk_keys):
     return dict([(key, item[key]) for key in item if key in pk_keys])
+
 
 def updates_for(item, pk_keys):
     updates = {}
@@ -78,6 +113,7 @@ def updates_for(item, pk_keys):
             updates[key] = value
 
     return updates
+
 
 def save_item(table, item, pk_keys=['id']):
     table.update_item(

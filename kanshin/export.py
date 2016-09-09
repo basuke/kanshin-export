@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-IMG_TEMPLATE = '<img src="{url}" class="kanshin-diary-entry-images">'
+IMG_TEMPLATE = u'<img src="{url}" class="kanshin-diary-entry-images">'
 
-COMMENT_TEMPLATE = '''-----
+COMMENT_TEMPLATE = u'''-----
 COMMENT:
 AUTHOR: {user}
 URL: http://www.kanshin.link/user/{id}
@@ -10,7 +10,7 @@ DATE: {date}
 {text}
 '''
 
-ENTRY_TEMPLATE = '''TITLE: {title}
+ENTRY_TEMPLATE = u'''TITLE: {title}
 BASENAME: diary-{id}
 AUTHOR: {user}
 DATE: {date}
@@ -24,14 +24,14 @@ BODY:
 '''
 
 
-def convert_to_mt_date(date, hour='08', min='00', sec='00'):
+def convert_to_mt_date(date, hour=u'08', min=u'00', sec=u'00'):
     """
     convert '2016-08-10' style date string into MT date format
-    >>> convert_to_mt_date('2016-08-10')
-    '08/10/2016 08:00:00'
+    >>> convert_to_mt_date(u'2016-08-10')
+    u'08/10/2016 08:00:00'
     """
-    year, month, day = date.split('-')
-    return '{month}/{day}/{year} {hour}:{min}:{sec}'.format(
+    year, month, day = date.split(u'-')
+    return u'{month}/{day}/{year} {hour}:{min}:{sec}'.format(
         year=year,
         month=month,
         day=day,
@@ -42,15 +42,15 @@ def convert_to_mt_date(date, hour='08', min='00', sec='00'):
 
 def build_mt_entry(id, title, date, text, images, user, comments, options={}, **kwargs):
     if images:
-        images = "\n".join([IMG_TEMPLATE.format(url=url) for url in images])
+        images = u"\n".join([IMG_TEMPLATE.format(url=url) for url in images])
 
         # if options.image_location == 'bottom':
         #     text = text + "\n\n" + images
         # else:
-        text = images + "\n\n" + text
+        text = images + u"\n\n" + text
 
     if comments:
-        text += "\n" + "".join([COMMENT_TEMPLATE.format(
+        text += u"\n" + u"".join([COMMENT_TEMPLATE.format(
             user=comment['user'],
             id=comment['user_id'],
             date=convert_to_mt_date(comment['date']),
@@ -63,6 +63,6 @@ def build_mt_entry(id, title, date, text, images, user, comments, options={}, **
         text=text,
         title=title,
         date=convert_to_mt_date(date),
-        category='関心空間の日記'
+        category=u'関心空間の日記'
     )
 
