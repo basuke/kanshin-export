@@ -25,11 +25,6 @@ BODY:
 
 
 def convert_to_mt_date(date, hour=u'08', min=u'00', sec=u'00'):
-    """
-    convert '2016-08-10' style date string into MT date format
-    >>> convert_to_mt_date(u'2016-08-10')
-    u'08/10/2016 08:00:00'
-    """
     year, month, day = date.split(u'-')
     return u'{month}/{day}/{year} {hour}:{min}:{sec}'.format(
         year=year,
@@ -39,6 +34,7 @@ def convert_to_mt_date(date, hour=u'08', min=u'00', sec=u'00'):
         min=min,
         sec=sec
     )
+
 
 def build_mt_entry(id, title, date, text, images, user, comments, options={}, **kwargs):
     if images:
