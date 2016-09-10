@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import re
+
+
+URL_PATTERN = re.compile(r"\[(.+?)\]\((https?://.+?)\)")
+
 IMG_TEMPLATE = u'<img src="{url}" class="kanshin-diary-entry-images">'
+LINK_TEMPLATE = u'<a href="{url}" class="kanshin-link">{title}</a>'
 
 COMMENT_TEMPLATE = u'''-----
 COMMENT:
@@ -14,7 +20,7 @@ ENTRY_TEMPLATE = u'''TITLE: {title}
 BASENAME: diary-{id}
 AUTHOR: {user}
 DATE: {date}
-CONVERT BREAKS: markdown_with_smartypants
+CONVERT BREAKS: 1
 CATEGORY: {category}
 -----
 BODY:
@@ -22,6 +28,12 @@ BODY:
 -----
 --------
 '''
+
+
+def _convert_markdown_link(m):
+    title = m.group(1)
+    url = m.group(2)
+    return LINK_TEMPLATE.format(title=title, url=url)
 
 
 def convert_to_mt_date(date, hour=u'08', min=u'00', sec=u'00'):
@@ -36,7 +48,13 @@ def convert_to_mt_date(date, hour=u'08', min=u'00', sec=u'00'):
     )
 
 
+def convert_text_entry(text):
+    return URL_PATTERN.sub(_convert_markdown_link, text)
+
+
 def build_mt_entry(id, title, date, text, images, user, comments, options={}, **kwargs):
+    text = convert_text_entry(text)
+
     if images:
         images = u"\n".join([IMG_TEMPLATE.format(url=url) for url in images])
 
@@ -50,7 +68,7 @@ def build_mt_entry(id, title, date, text, images, user, comments, options={}, **
             user=comment['user'],
             id=comment['user_id'],
             date=convert_to_mt_date(comment['date']),
-            text=comment['text'].strip()
+            text=convert_text_entry(comment['text'].strip())
         ) for comment in comments]).strip()
 
     return ENTRY_TEMPLATE.format(
