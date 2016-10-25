@@ -30,20 +30,51 @@ def fetch_user_diaries(user_id):
         yield(get_item(diary_table, item['id']))
 
 
+def fetch_user_keywords(user_id):
+    query_args = dict(
+        IndexName='byUser',
+        KeyConditionExpression=Key('user_id').eq(user_id),
+        ProjectionExpression='id'
+    )
+
+    for item in query(keyword_table, **query_args):
+        yield(get_item(keyword_table, item['id']))
+
+
 def fetch_user(user_id):
     return get_item(user_table, user_id)
+
+
+def fetch_connections(keyword_id):
+    query_args = dict(
+        IndexName='byUser',
+        KeyConditionExpression=Key('user_id').eq(user_id),
+        ProjectionExpression='id'
+    )
+
+    return (
+        dict(
+            id=item['other_id'],
+            out_reason=item['out_reason'],
+            in_reason=item['in_reason']
+        )
+        for item in query(connection_table, **query_args)
+    )
 
 
 def save_user(item):
     item['id'] = int(item['id'])
     save_item(user_table, item)
 
+
 def save_keyword(item):
     item['id'] = int(item['id'])
     save_item(keyword_table, item)
 
+
 def save_connection(id1, id2, out_reason=None, in_reason=None):
     save_item(connection_table, dict(id=int(id1), other_id=int(id2), out_reason=out_reason, in_reason=in_reason), ['id', 'other_id'])
+
 
 def save_diary(item):
     item['id'] = int(item['id'])
