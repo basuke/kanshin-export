@@ -12,5 +12,10 @@ logger.info('collecting user ids')
 
 links = browser.paginate_select('/user/?od=create&cn=100', '.user h2 a')
 for link in links:
-    user = extract_user(link)
-    user_download.send(user['id'])
+	try:
+		user = extract_user(link)
+		if user['id'] < 49807:
+			user_download.send(user['id'])
+	except:
+		pass
+
