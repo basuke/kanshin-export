@@ -111,10 +111,7 @@ class KanshinBrowser(RoboBrowser):
 
         return record
 
-    def paginate_select(self, url, selector):
-        page = 1
-        count = 100
-
+    def paginate_select(self, url, selector, page=1, count=100):
         self.open(url)
         self.save_page()
 
