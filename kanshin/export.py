@@ -29,6 +29,21 @@ BODY:
 --------
 '''
 
+INBOX_TEMPLATE = u"""
+<div class="date">{date}</div>
+<div class="in"><a href="http://potomak.com/kimono/index.php3-mode=home&id={uid}.html">{user}</a>さんから伝言</div>
+<p>{text}</p>
+<hr>
+"""
+
+OUTBOX_TEMPLATE = u"""
+<div class="date">{date}</div>
+<div class="out">あなたから<a href="http://potomak.com/kimono/index.php3-mode=home&id={uid}.html">{user}</a>さんへの伝言</div>
+<p>{text}</p>
+<hr>
+"""
+
+
 
 def _convert_markdown_link(m):
     title = m.group(1)
@@ -79,4 +94,11 @@ def build_mt_entry(id, title, date, text, images, user, comments, options={}, **
         date=convert_to_mt_date(date),
         category=u'関心空間の日記'
     )
+
+def convert_keyword_to_diary():
+    pass
+
+def build_message_body(id, name, date, text, out):
+    template = OUTBOX_TEMPLATE if out else INBOX_TEMPLATE
+    return template.format(uid=id, user=name, date=date, text=text.replace(u'\n', u'<br>\n'))
 

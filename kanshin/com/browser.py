@@ -27,12 +27,12 @@ CACHE_NAME = '.kanshin-cache-{}.{}'.format(*sys.version_info[0:2])
 
 
 class KanshinBrowser(RoboBrowser):
-    def __init__(self, base_url='http://www.kanshin.com', cache=False):
+    def __init__(self, base_url='http://www.kanshin.com', cache=False, parser="html.parser"):
         if cache:
             print('caching in {}'.format(CACHE_NAME))
             requests_cache.install_cache(CACHE_NAME)
 
-        super(KanshinBrowser, self).__init__(parser="html.parser", history=2)
+        super(KanshinBrowser, self).__init__(parser=parser, history=2)
 
         self.base_url = base_url
         self.user = None
@@ -140,12 +140,7 @@ def login_only(func):
 
     return wrapper
 
-class KanshinLoginBrowser(KanshinBrowser):
-    def __init__(self, email, password, base_url='http://www.kanshin.com', cache=False):
-        super(KanshinLoginBrowser, self).__init__(base_url, cache=False)
-
-        self.login(email, password)
-
+class KanshinLoginMixin(object):
     def login(self, email, password):
         self.logout()
         self.open('/login')

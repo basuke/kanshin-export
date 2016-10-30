@@ -7,3 +7,4 @@ click
 rq
 requests_cache
 future
+html5lib

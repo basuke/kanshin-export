@@ -6,7 +6,7 @@ from builtins import str
 
 
 URL = 'http://www.kanshin.com'
-LINK_FORMAT = u'[{text}]({url})'
+LINK_FORMAT = u'<a href="{url}">{text}</a>'
 
 class Page(object):
     def __init__(self, url, data):
