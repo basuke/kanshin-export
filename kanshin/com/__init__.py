@@ -7,6 +7,7 @@ from builtins import str
 
 URL = 'http://www.kanshin.com'
 LINK_FORMAT = u'<a href="{url}">{text}</a>'
+IMG_FORMAT = u'<img src="{url}">'
 
 class Page(object):
     def __init__(self, url, data):
@@ -46,6 +47,8 @@ def extract_text(contents):
         elif isinstance(node, Tag):
             if node.name == 'a':
                 text += LINK_FORMAT.format(url=node.get('href'), text=node.get_text())
+            elif node.name == 'img':
+                text += IMG_FORMAT.format(url=node.get('src'))
     return text
 
 def extract_user(link):

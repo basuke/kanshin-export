@@ -38,7 +38,7 @@ INBOX_TEMPLATE = u"""
 
 OUTBOX_TEMPLATE = u"""
 <div class="date">{date}</div>
-<div class="out">あなたから<a href="http://potomak.com/kimono/index.php3-mode=home&id={uid}.html">{user}</a>さんへの伝言</div>
+<div class="out"><a href="http://potomak.com/kimono/index.php3-mode=home&id={uid}.html">{user}</a>さんへの伝言</div>
 <p>{text}</p>
 <hr>
 """

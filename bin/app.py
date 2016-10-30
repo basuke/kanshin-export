@@ -42,7 +42,7 @@ def export_group_messages_form():
 	return """
 	<h1>関心空間グループ 伝言ダウンロードサービス</h1>
 
-	<form action="/_/export/message/download" method="GET">
+	<form action="/_/export/message/download" method="GET" autocomplete="off">
 		<dl>
 			<dt><label for="group">グループ</label></dt>
 			<dd><input id="group" name="group" size="20" value="kimono"></dd>
@@ -74,20 +74,35 @@ def export_group_messages():
     response.set_header('Content-Disposition', 'attachment; filename=' + filename);
     response.set_header('Content-Transfer-Encoding', 'binary')
 
-    yield u"""<style>
-    .in a, .out a, date {
-    	font-weight: bold;
-    }
-    """
+    yield u"""<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>伝言</title>
+	<link href="https://dl.dropboxusercontent.com/u/349/kanshin/message.css" type="text/css" rel="stylesheet">
+	<script src="https://dl.dropboxusercontent.com/u/349/kanshin/message.js"></script>
+</head>
+<body>
+<div id="contents">
+<div id="navi">
+	<a href="#inbox">自分へ届いた伝言</a> | 
+	<a href="#outbox">自分が出した伝言</a>
+</div>
+"""
 
-    yield u"<h2>自分へ届いた伝言</h2>\n<hr>"
+    yield u'<h2 id="inbox">自分へ届いた伝言</h2>\n<hr>'
     for msg in b.get_inbox():
         yield build_message_body(msg[0], msg[1], msg[2], msg[3], False)
 
-    yield u"<h2>自分が出した伝言</h2>\n<hr>"
+    yield u'<h2 id="outbox">自分が出した伝言</h2>\n<hr>'
     for msg in b.get_outbox():
         yield build_message_body(msg[0], msg[1], msg[2], msg[3], True)
 
+    yield u"""
+</div>
+</body>
+</html>
+"""
 
 @route('/user/<user_id:int>')
 def redirect_user(user_id):

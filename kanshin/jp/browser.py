@@ -22,26 +22,6 @@ class KanshinGroupBrowser(KanshinBrowser):
     	tags = [tag for tag in s.select('td') if tag.attrs.get('width') == '530']
     	return tags[0] if tags else None
 
-    def paginate_select(self, url, page=1, count=100):
-        self.open(url)
-        self.save_page()
-
-        url = self.url
-
-        while True:
-            items = self.parsed.select(selector)
-            if len(items) == 0:
-                return
-
-            for item in items:
-                yield item
-            page += 1
-
-            tmp_url = url + ('?' if url.find('?') < 0 else '&') + 'p={p}&cn={cn}'.format(p=page, cn=count)
-
-            self.open(tmp_url)
-            self.save_page()
-
     def login(self, email, password):
         self.logout()
         self.open('index.php3?mode=login')
