@@ -110,4 +110,4 @@ def redirect_user(user_id):
 
 
 port = sys.argv[1] if len(sys.argv) > 1 else 8050
-run(host='0.0.0.0', port=port, server='gunicorn', timeout=60*10)
+run(host='0.0.0.0', port=port, server='gunicorn', timeout=60*100)
