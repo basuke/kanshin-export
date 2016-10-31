@@ -27,8 +27,25 @@ def export_diary(user_id):
         	**item)
 
 
-@route('/_/export/keyword/mt/<user_id:int>')
-def export_keyword(user_id):
+@route('/_/export/keyword/')
+def export_keyword_form():
+	return """
+	<h1>関心空間 キーワードエキスポート</h1>
+
+	<form action="/_/export/keyword/download" method="GET" autocomplete="off">
+		<dl>
+			<dt><label for="user_id">User ID</label></dt>
+			<dd><input id="user_id" name="user_id" size="60"></dd>
+
+			<dt><input name="download" type="submit" value="download"></dt>
+		</dl>
+	</form>
+	"""
+
+@route('/_/export/keyword/download')
+def export_keyword():
+    user_id = int(request.GET.user_id)
+
     filename = 'kanshin-keyword-{user_id}.txt'.format(user_id=user_id)
 
     response.set_header('Content-Description', 'File Transfer')
