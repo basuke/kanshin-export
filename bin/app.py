@@ -10,8 +10,25 @@ from kanshin.export import build_mt_entry, convert_keyword_to_diary, build_messa
 from kanshin.jp.browser import KanshinGroupBrowser
 
 
-@route('/_/export/diary/mt/<user_id:int>')
-def export_diary(user_id):
+@route('/_/export/diary/')
+def export_diary_form():
+	return """
+	<h1>関心空間 日記エキスポート</h1>
+
+	<form action="/_/export/diary/download" method="GET" autocomplete="off">
+		<dl>
+			<dt><label for="user_id">User ID</label></dt>
+			<dd><input id="user_id" name="user_id" size="60"></dd>
+
+			<dt><input name="download" type="submit" value="download"></dt>
+		</dl>
+	</form>
+	"""
+
+@route('/_/export/diary/download')
+def export_diary():
+    user_id = int(request.GET.user_id)
+
     filename = 'kanshin-diary-{user_id}.txt'.format(user_id=user_id)
 
     response.set_header('Content-Description', 'File Transfer')
