@@ -5,7 +5,7 @@ import re
 
 URL_PATTERN = re.compile(r"\[(.+?)\]\((https?://.+?)\)")
 
-IMG_TEMPLATE = u'<img src="{url}" class="kanshin-entry-images">'
+IMG_TEMPLATE = u'<div><img src="{url}" class="kanshin-entry-images"></div>'
 LINK_TEMPLATE = u'<a href="{url}" class="kanshin-link">{title}</a>'
 
 COMMENT_TEMPLATE = u'''-----
@@ -20,7 +20,7 @@ ENTRY_TEMPLATE = u'''TITLE: {title}
 BASENAME: {kind}-{id}
 AUTHOR: {user}
 DATE: {date}
-CONVERT BREAKS: 1
+CONVERT BREAKS: 0
 CATEGORY: {category}
 STATUS: publish
 ALLOW COMMENTS: 1
@@ -67,7 +67,7 @@ def convert_to_mt_date(date, hour=u'08', min=u'00', sec=u'00'):
 
 
 def convert_text_entry(text):
-    return URL_PATTERN.sub(convert_link, text)
+    return URL_PATTERN.sub(convert_link, text).replace('\n', '<br>\n')
 
 
 def build_mt_entry(id, kind, category, 
@@ -105,12 +105,12 @@ def convert_keyword_to_diary(kw):
     text = kw['text']
 
     if kw['attributes']:
-        attr_box = u'<dl class="attributes">\n'
+        attr_box = u'<dl class="attributes">'
         for attr in kw['attributes']:
-            attr_box += u'  <dt>{name}</dt><dd>{value}</dd>\n'.format(**attr)
-        attr_box += u'</dl>\n'
+            attr_box += u'<dt>{name}</dt><dd>{value}</dd>'.format(**attr)
+        attr_box += u'</dl>'
 
-        text += "\n" + attr_box
+        text += attr_box
 
     return {
         'id': kw['id'],
