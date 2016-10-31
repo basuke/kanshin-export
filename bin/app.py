@@ -20,7 +20,11 @@ def export_diary(user_id):
     response.set_header('Content-Transfer-Encoding', 'binary')
 
     for item in fetch_user_diaries(user_id):
-        yield build_mt_entry(options=request.query, **item)
+        yield build_mt_entry(
+        	kind=u'diary',
+        	category=u'関心空間の日記', 
+        	options=request.query,
+        	**item)
 
 
 @route('/_/export/keyword/mt/<user_id:int>')
@@ -34,7 +38,10 @@ def export_keyword(user_id):
 
     for item in fetch_user_keywords(user_id):
         item = convert_keyword_to_diary(item)
-        yield build_mt_entry(options=request.query, **item)
+        yield build_mt_entry(
+        	kind=u'keyword',
+        	options=request.query,
+        	**item)
 
 
 @route('/_/export/message/')

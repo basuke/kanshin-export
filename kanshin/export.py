@@ -5,7 +5,7 @@ import re
 
 URL_PATTERN = re.compile(r"\[(.+?)\]\((https?://.+?)\)")
 
-IMG_TEMPLATE = u'<img src="{url}" class="kanshin-diary-entry-images">'
+IMG_TEMPLATE = u'<img src="{url}" class="kanshin-entry-images">'
 LINK_TEMPLATE = u'<a href="{url}" class="kanshin-link">{title}</a>'
 
 COMMENT_TEMPLATE = u'''-----
@@ -17,11 +17,14 @@ DATE: {date}
 '''
 
 ENTRY_TEMPLATE = u'''TITLE: {title}
-BASENAME: diary-{id}
+BASENAME: {kind}-{id}
 AUTHOR: {user}
 DATE: {date}
 CONVERT BREAKS: 1
 CATEGORY: {category}
+STATUS: publish
+ALLOW COMMENTS: 1
+ALLOW PING: 0
 -----
 BODY:
 {text}
@@ -45,7 +48,7 @@ OUTBOX_TEMPLATE = u"""
 
 
 
-def _convert_markdown_link(m):
+def convert_link(m):
     title = m.group(1)
     url = m.group(2)
     return LINK_TEMPLATE.format(title=title, url=url)
@@ -64,10 +67,12 @@ def convert_to_mt_date(date, hour=u'08', min=u'00', sec=u'00'):
 
 
 def convert_text_entry(text):
-    return URL_PATTERN.sub(_convert_markdown_link, text)
+    return URL_PATTERN.sub(convert_link, text)
 
 
-def build_mt_entry(id, title, date, text, images, user, comments, options={}, **kwargs):
+def build_mt_entry(id, kind, category, 
+    title, date, text, images, user, comments, 
+    options={}, **kwargs):
     text = convert_text_entry(text)
 
     if images:
@@ -88,15 +93,36 @@ def build_mt_entry(id, title, date, text, images, user, comments, options={}, **
 
     return ENTRY_TEMPLATE.format(
         id=id,
+        kind=kind,
         user=user,
         text=text,
         title=title,
         date=convert_to_mt_date(date),
-        category=u'関心空間の日記'
+        category=category
     )
 
-def convert_keyword_to_diary():
-    pass
+def convert_keyword_to_diary(kw):
+    text = kw['text']
+
+    if kw['attributes']:
+        attr_box = u'<dl class="attributes">\n'
+        for attr in kw['attributes']:
+            attr_box += u'  <dt>{name}</dt><dd>{value}</dd>\n'.format(**attr)
+        attr_box += u'</dl>\n'
+
+        text += "\n" + attr_box
+
+    return {
+        'id': kw['id'],
+        'user': kw['user'],
+        'text': text,
+        'title': kw['title'],
+        'date': kw['created'],
+        'category': kw['category']['name'],
+
+        'images': kw['images'],
+        'comments': kw['comments'],
+    }
 
 def build_message_body(id, name, date, text, out):
     template = OUTBOX_TEMPLATE if out else INBOX_TEMPLATE
